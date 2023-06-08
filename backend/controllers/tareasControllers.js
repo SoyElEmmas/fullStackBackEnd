@@ -34,14 +34,15 @@ const updateTareas = asyncHandler(async (req, res) => {
 });
 
 const deleteTareas = asyncHandler(async (req, res) => {
-    const tarea = await Tarea.findById(req.params.id)
+    const idTarea = req.params.id
+    const tarea = await Tarea.findById(idTarea)
 
     if (!tarea) {
        res.status(400)
-       throw new Error ('La tarea ',req.params.id,' no fue encontrada')
+       throw new Error ('La tarea ',idTarea,' no fue encontrada')
     }
-    await Tarea.deleteOne(req.params.id)
-    res.status(200).json({ id:req.params.id });
+    await Tarea.deleteOne({idTarea})
+    res.status(200).json(idTarea)
 });
 
 module.exports = {
