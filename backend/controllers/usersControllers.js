@@ -75,6 +75,10 @@ const createUser = asyncHandler(async (req, res) => {
   }
 });
 
+const misDatos = asyncHandler( async (req,res) =>{
+  res.status(200).json({message:'mis datos'})
+})
+
 const generateToken = (id) => {
   return jwt.sign({id}, process.env.JWT_SECRET, { expiresIn: '10m' });
 };
@@ -108,4 +112,5 @@ const deleteTareas = asyncHandler(async (req, res) => {
 module.exports = {
   createUser,
   loginUser,
+  misDatos
 };

@@ -2,7 +2,7 @@ const asyncHandler = require("express-async-handler");
 const Tarea = require("../models/tareaModel");
 
 const getTareas = asyncHandler(async (req, res) => {
-    const tareas = await Tarea.find()
+    const tareas = await Tarea.find({user: req.user.id})
     res.status(200).json(tareas);
 });
 
@@ -15,6 +15,7 @@ const setTareas = asyncHandler(async (req, res) => {
 
   const tarea = await Tarea.create({
     texto: req.body.texto,
+    user:req.user.id
   });
 
   res.status(201).json({ message: "Tarea creada", tarea: tarea });
@@ -28,6 +29,11 @@ const updateTareas = asyncHandler(async (req, res) => {
        throw new Error ('La tarea ',req.params.id,' no fue encontrada')
     }
 
+    if (tarea.user.toString() !== req.user.id) {
+      res.status(400)
+      throw new Error('Esta tarea no te pertenece, chavo')
+    }
+
     const tareaUpdated = await Tarea.findByIdAndUpdate(req.params.id,req.body, {new:true})
 
     res.status(200).json({ message: "Tarea actualizada", tareaUpdated });
@@ -39,9 +45,12 @@ const deleteTareas = asyncHandler(async (req, res) => {
 
     if (!tarea) {
        res.status(400)
-       throw new Error ('La tarea ',idTarea,' no fue encontrada')
+       throw new Error ('La tarea no fue encontrada')
     }
-    await Tarea.deleteOne({idTarea})
+    console.log('Tarea encontrada:'+tarea);
+    
+    await tarea.deleteOne()
+    console.log('Tarea eliminada: '+idTarea);
     res.status(200).json(idTarea)
 });
 
